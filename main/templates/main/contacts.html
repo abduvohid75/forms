@@ -1,0 +1,30 @@
+{% extends 'main/base.html' %}
+{% block content %}
+<div class="col-md-4">
+    <div class="card mb-4 box-shadow">
+        <div class="card-body">
+            <p class="card-text" align="center">
+                //Информация о компании
+            </p>
+        </div>
+    </div>
+</div>
+<div class="col-md-4">
+    <div class="card mb-4 box-shadow">
+        <div class="card-body">
+            <h2 align="center">Введите свои данные</h2>
+            <form method="post">
+                {% csrf_token %}
+                <h4 align="center">Имя</h4>
+                <input class="form-control m-2" name="name">
+                <h4 align="center">Почта</h4>
+                <input class="form-control m-2" name="email">
+                <h4 align="center">Сообщение</h4>
+                <textarea class="form-control m-2" name="message"> </textarea>
+                <button type="submit" class="btn btn-primary form-control m-2">Отправить</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
