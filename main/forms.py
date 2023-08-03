@@ -1,5 +1,7 @@
 from django import forms
-from main.models import blog, Product, Category
+from main.models import blog, Product, Category, Version
+
+
 class BlogForm(forms.ModelForm):
 
     class Meta:
@@ -21,3 +23,9 @@ class ProductForm(forms.ModelForm):
             if word in cleaned_data.lower():
                 raise forms.ValidationError("Недопустимые слова в названии продукта")
         return cleaned_data
+
+class VersionForm(forms.ModelForm):
+
+    class Meta:
+        model = Version
+        fields = "__all__"

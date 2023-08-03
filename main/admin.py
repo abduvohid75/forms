@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from main.models import blog, Product, Category
+from main.models import blog, Product, Category, Version
 
 
 # Register your models here.
@@ -17,3 +17,7 @@ class StudentAdmin(admin.ModelAdmin):
 @admin.register(Category)
 class StudentAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name', 'description',)
+
+@admin.register(Version)
+class StudentAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'name', 'product', 'status',)

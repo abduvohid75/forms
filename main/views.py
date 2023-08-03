@@ -2,16 +2,22 @@ import pytils.translit
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
+from django.forms import inlineformset_factory
 
-from main.models import blog, Product
-from main.forms import BlogForm, ProductForm
+from main.models import blog, Product, Version
+from main.forms import BlogForm, ProductForm, VersionForm
 
 
 # Create your views here.
+
 class ProductListView(ListView):
     model = Product
     template_name = 'main/index.html'
     extra_context = {'title': 'Главная'}
+    def get_queryset(self):
+        query_set = super().get_queryset()
+        products_with_true_status = query_set.filter(version__status=True).distinct()
+        return products_with_true_status
 
 class ProductCreateView(CreateView):
     model = Product
@@ -23,6 +29,30 @@ class ProductCreateView(CreateView):
             new_mat.slug = pytils.translit.slugify(new_mat.name)
             new_mat.save()
         return super().form_valid(form)
+
+class ProductUpdateView(UpdateView):
+    model = Product
+    form_class = ProductForm
+    success_url = reverse_lazy('main:index')
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        ProductVersionFormSet = inlineformset_factory(Product, Version, form=VersionForm, extra=1)
+        if self.request.POST:
+            context_data['formset'] = ProductVersionFormSet(self.request.POST, instance=self.object)
+        else:
+            context_data['formset'] = ProductVersionFormSet(instance=self.object)
+        return context_data
+
+    def form_valid(self, form):
+        formset = self.get_context_data()['formset']
+        self.object = form.save()
+        if formset.is_valid():
+            formset.instance = self.object
+            formset.save()
+
+        return super().form_valid(form)
+
 
 class BlogListView(ListView):
     model = blog

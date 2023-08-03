@@ -15,7 +15,7 @@
                 <li class="list-group-item">{{object.category.name}}</li>
             </ul>
             <div class="card-body" align="center">
-                <a href="#" class="card-link">Card link</a>
+                <a href="{% url 'main:edit_products'  object.pk%}" class="card-link">Изменить</a>
                 <a href="#" class="card-link">Another link</a>
             </div>
         </div>
