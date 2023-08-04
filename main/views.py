@@ -10,25 +10,29 @@ from main.forms import BlogForm, ProductForm, VersionForm
 
 # Create your views here.
 
-class ProductListView(ListView):
-    model = Product
-    template_name = 'main/index.html'
-    extra_context = {'title': 'Главная'}
-    def get_queryset(self):
-        query_set = super().get_queryset()
-        products_with_true_status = query_set.filter(version__status=True).distinct()
-        return products_with_true_status
-
 class ProductCreateView(CreateView):
     model = Product
     form_class = ProductForm
     success_url = reverse_lazy('main:index')
+
     def form_valid(self, form):
         if form.is_valid():
             new_mat = form.save()
             new_mat.slug = pytils.translit.slugify(new_mat.name)
             new_mat.save()
         return super().form_valid(form)
+
+
+class ProductListView(ListView):
+    model = Product
+    template_name = 'main/index.html'
+    extra_context = {'title': 'Главная'}
+
+    def get_queryset(self):
+        query_set = super().get_queryset()
+        products_with_true_status = query_set.filter(version__status=True).distinct()
+        return products_with_true_status
+
 
 class ProductUpdateView(UpdateView):
     model = Product

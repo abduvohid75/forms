@@ -46,7 +46,7 @@ class Product(models.Model):
 
 class Version(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    number = models.CharField(max_length=100, verbose_name="Версия")
+    number = models.IntegerField(max_length=100, verbose_name="Версия")
     name = models.CharField(max_length=100, verbose_name="Имя версии")
     status = models.BooleanField(verbose_name="Статус")
 

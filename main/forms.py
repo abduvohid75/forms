@@ -1,14 +1,19 @@
 from django import forms
 from main.models import blog, Product, Category, Version
 
-
-class BlogForm(forms.ModelForm):
+class StyleForm:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name != 'status': # form-control не подружился с полем статуса, пришлось прописывать условие
+                field.widget.attrs['class'] = 'form-control'
+class BlogForm(StyleForm, forms.ModelForm):
 
     class Meta:
         model = blog
         fields = ('name', 'description', 'preview',)
 
-class ProductForm(forms.ModelForm):
+class ProductForm(StyleForm, forms.ModelForm):
 
     class Meta:
         model = Product
@@ -24,7 +29,7 @@ class ProductForm(forms.ModelForm):
                 raise forms.ValidationError("Недопустимые слова в названии продукта")
         return cleaned_data
 
-class VersionForm(forms.ModelForm):
+class VersionForm(StyleForm, forms.ModelForm):
 
     class Meta:
         model = Version
