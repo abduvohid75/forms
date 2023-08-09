@@ -6,5 +6,12 @@
         <li><a href="{% url 'main:blogs' %}" class="text-white">Блоги</a></li>
         <li><a href="{% url 'main:create_blogs' %}" class="text-white">Создать блог</a></li>
         <li><a href="{% url 'main:create_products' %}" class="text-white">Создать продукт</a></li>
+        <li><a href="{% url 'main:version' %}" class="text-white">Прикрепить версию к продукту</a></li>
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'users:logout' %}" class="text-white">Выйти</a></li>
+        {% else %}
+            <li><a href="{% url 'users:login' %}" class="text-white">Войти</a></li>
+            <li><a href="{% url 'users:user_reg' %}" class="text-white">Регистрация</a></li>
+        {% endif %}
     </ul>
 </div>

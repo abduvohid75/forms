@@ -1,4 +1,5 @@
 import pytils.translit
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
@@ -10,12 +11,13 @@ from main.forms import BlogForm, ProductForm, VersionForm
 
 # Create your views here.
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
     success_url = reverse_lazy('main:index')
 
     def form_valid(self, form):
+        form.instance.author = self.request.user.email
         if form.is_valid():
             new_mat = form.save()
             new_mat.slug = pytils.translit.slugify(new_mat.name)
@@ -34,7 +36,7 @@ class ProductListView(ListView):
         return products_with_true_status
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
     success_url = reverse_lazy('main:index')
@@ -113,6 +115,10 @@ class BlogDeleteView(DeleteView):
     model = blog
     success_url = reverse_lazy('main:blogs')
 
+class VersionCreateView(LoginRequiredMixin, CreateView):
+    model = Version
+    form_class = VersionForm
+    success_url = reverse_lazy('main:index')
 
 def contacts(request):
     if (request.method == 'POST'):

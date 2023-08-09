@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'main',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -127,3 +128,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+AUTH_USER_MODEL = 'users.User'
+LOGIN_REDIRECT_URL = '/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'sendinfoforauth@gmail.com'
+EMAIL_HOST_PASSWORD = 'vmvvkaedltkhkieb'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'Anon sendinfoforauth@gmail.com'

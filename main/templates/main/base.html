@@ -1,5 +1,5 @@
 {% load static %}
-
+{% load my_tags %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -8,6 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="/docs/4.0/assets/img/favicons/favicon.ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
 
     <title>{{title}}</title>
 
@@ -18,7 +19,71 @@
 
     <!-- Custom styles for this template -->
     <link href="{% static 'css/album.css' %}" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+     <style>
+    .user-panel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 5px;
+      background-color: #343a40;
+      box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.2);
+    }
+    .user-panel .user-field {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      cursor: pointer;
+      background-color: #343a40;
+      padding: 5px;
+      border-radius: 5px;
+    }
+    .user-panel .profile-img {
+      width: 18px; /* Измененное свойство */
+      height: 18px; /* Измененное свойство */
+      border-radius: 50%;
+    }
+    .user-panel .username {
+      margin-left: 5px;
+      color: #fff;
+      font-weight: bold;
+      font-style: italic;
+      font-family: 'Arial', sans-serif;
+      font-size: 12px;
+    }
+    .user-panel .arrow {
+      display: block;
+      margin-left: 5px;
+      color: #fff;
+      font-size: 14px;;
+    }
+    .user-panel .profile-popup {
+      position: absolute;
+      top: -35px;
+      left: 0;
+      display: none;
+      min-width: 150px;
+      padding: 5px;
+      background-color: #343a40;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+      border-radius: 5px;
+    }
+    .user-panel .profile-popup .profile-button {
+      display: block;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 5px;
+      background-color: #6c757d;
+      color: #fff;
+      padding: 5px;
+      border-radius: 3px;
+      text-decoration: none;
+    }
+  </style>
 </head>
+
 
 <body>
 
@@ -44,7 +109,17 @@
 </header>
 
 <main role="main">
-
+    {% if not user.is_authenticated %}
+    <section class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">Вы еще не авторизованы</h1>
+            <p>
+                <a href="{% url 'users:login' %}" class="btn btn-primary my-2">Войти</a>
+                <a href="{% url 'users:user_reg' %}" class="btn btn-secondary my-2">Зарегистрироваться</a>
+            </p>
+        </div>
+    </section>
+    {% elif user.is_authenticated and user.is_email_verified %}
     <section class="jumbotron text-center">
         <div class="container">
             <h1 class="jumbotron-heading">{{title}}</h1>
@@ -54,6 +129,16 @@
             </p>
         </div>
     </section>
+    {% elif not user.is_email_verified %}
+    <section class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">Вы еще не подтвердили свою почту</h1>
+            <p>
+                <a href="{% url 'users:verify' %}" class="btn btn-primary my-2">Подтвердить</a>
+            </p>
+        </div>
+    </section>
+    {% endif %}
 
     <div class="album py-5 bg-light">
         <div class="container">
@@ -67,14 +152,31 @@
 
 </main>
 
-<footer class="text-muted">
-    <div class="container">
-        <p class="float-right">
-            <a href="#">Вверх</a>
-        </p>
-        <p>&copy; 2000 - {% now 'Y'%}</p>
+<div class="user-panel">
+    <div class="user-field">
+        {% if user.is_authenticated %}
+        <img class="profile-img" src="{{user.avatar | image_path_filter}}" alt="User Image">
+        <span class="username">{{user.first_name}}</span>
+        <span class="arrow" onclick="toggleProfilePopup()">&#9660;</span>
+        <div class="profile-popup" id="profilePopup">
+            <a class="profile-button" href="{% url 'users:profile' %}">Профиль</a>
+            <a class="profile-button" href="{% url 'users:password' %}">Изменить пароль</a>
+        </div>
     </div>
-</footer>
+    {% endif %}
+</div>
+
+<script>
+    function toggleProfilePopup() {
+      var popup = document.getElementById("profilePopup");
+      if (popup.style.display === "none") {
+        popup.style.display = "block";
+      } else {
+        popup.style.display = "none";
+      }
+    }
+
+</script>
 
 <!-- Bootstrap core JavaScript
 ================================================== -->

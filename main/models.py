@@ -37,6 +37,8 @@ class Product(models.Model):
     date_create = models.DateField(verbose_name='Дата создания', null=True, blank=True)
     date_edit = models.DateField(verbose_name='Дата последнего изменения', null=True, blank=True)
 
+    author = models.EmailField(verbose_name='Автор', default='no@gmail.com')
+
     def __str__(self):
         return f'{self.name}'
 
@@ -46,7 +48,7 @@ class Product(models.Model):
 
 class Version(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    number = models.IntegerField(max_length=100, verbose_name="Версия")
+    number = models.IntegerField(verbose_name="Версия")
     name = models.CharField(max_length=100, verbose_name="Имя версии")
     status = models.BooleanField(verbose_name="Статус")
 

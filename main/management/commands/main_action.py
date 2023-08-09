@@ -1,45 +1,19 @@
 from django.core.management import BaseCommand
 
 from main.models import Product, Category
+from users.models import User
 
 
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
+        user = User.objects.create(
+            email='admin@sky.pro',
+            first_name = 'Admin',
+            last_name = 'Admin',
+            is_staff=True,
+            is_superuser=True,
+        )
 
-        product_list = [
-            {'name': 'Помидор', 'description': 'Обычный помидор', 'category': 'Овощи', 'price': 10, 'date_create': '2023-07-15',
-             'date_edit': '2023-07-15'},
-            {'name': 'Огурец', 'description': 'Обычный огурец', 'category': 'Овощи', 'price': 14, 'date_create': '2023-07-15',
-             'date_edit': '2023-07-15'},
-            {'name': 'Свекла', 'description': 'Необычная свекла', 'category': 'Овощи', 'price': 20, 'date_create': '2023-07-15',
-             'date_edit': '2023-07-15'},
-            {'name': 'Малина', 'description': 'Обычная малина', 'category': 'Ягоды', 'price': 30, 'date_create': '2023-07-15',
-             'date_edit': '2023-07-15'},
-            {'name': 'Клубника', 'description': 'Необычная клубника', 'category': 'Ягоды', 'price': 88, 'date_create': '2023-07-15',
-             'date_edit': '2023-07-15'},
-            # объект для проверки успешной работы обрезки длинного описания
-            {'name': 'Арбуз', 'description': 'Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание Длинное описание ', 'category': 'Ягода', 'price': 88, 'date_create': '2023-07-15',
-             'date_edit': '2023-07-15'}
-        ]
-
-        add_products = []
-        for product_item in product_list:
-            add_products.append(
-                Product(**product_item)
-            )
-
-        Product.objects.bulk_create(add_products)
-
-        category_list = [
-            {'name' : 'Овощи', 'description' : 'Овощи. Самые обычные овощи.'},
-            {'name': 'Ягод.', 'description': 'Ягоды. Самые обычные ягоды'}
-        ]
-
-        add_categories = []
-        for category_item in category_list:
-            add_categories.append(
-                Product(**category_item)
-            )
-
-        Category.objects.bulk_create(category_list)
+        user.set_password('123password456')
+        user.save()
