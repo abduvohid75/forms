@@ -140,3 +140,5 @@ EMAIL_HOST_USER = 'sendinfoforauth@gmail.com'
 EMAIL_HOST_PASSWORD = 'vmvvkaedltkhkieb'
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'Anon sendinfoforauth@gmail.com'
+
+LOGIN_URL = 'login/'

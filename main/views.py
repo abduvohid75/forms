@@ -1,12 +1,13 @@
 import pytils.translit
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 from django.forms import inlineformset_factory
+from django.contrib.auth.models import Group
 
 from main.models import blog, Product, Version
-from main.forms import BlogForm, ProductForm, VersionForm
+from main.forms import BlogForm, ProductForm, VersionForm, ModerProductForm
 
 
 # Create your views here.
@@ -17,7 +18,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('main:index')
 
     def form_valid(self, form):
-        form.instance.author = self.request.user.email
+        form.instance.author = self.request.user
         if form.is_valid():
             new_mat = form.save()
             new_mat.slug = pytils.translit.slugify(new_mat.name)
@@ -25,21 +26,21 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class ProductListView(ListView):
+class ProductListView(LoginRequiredMixin, ListView):
     model = Product
     template_name = 'main/index.html'
     extra_context = {'title': 'Главная'}
 
     def get_queryset(self):
         query_set = super().get_queryset()
-        products_with_true_status = query_set.filter(version__status=True).distinct()
+        products_with_true_status = query_set.filter(version__status=True, is_published=True).distinct()
         return products_with_true_status
 
 
-class ProductUpdateView(LoginRequiredMixin, UpdateView):
+class ProductUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
     model = Product
-    form_class = ProductForm
     success_url = reverse_lazy('main:index')
+    perms_list = ['main.set_published_Product', 'main.change_desc_Product', 'main.change_cat_Product']
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -49,6 +50,16 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
         else:
             context_data['formset'] = ProductVersionFormSet(instance=self.object)
         return context_data
+
+    def test_func(self):
+        product = self.get_object()
+        return product.author == self.request.user or Group.objects.get(name='Модераторы') in self.request.user.groups.all()
+
+    def get_form_class(self):
+        if Group.objects.get(name='Модераторы') in self.request.user.groups.all():
+            return ModerProductForm
+        else:
+            return ProductForm
 
     def form_valid(self, form):
         formset = self.get_context_data()['formset']
@@ -109,8 +120,6 @@ class BlogDetailView(DetailView):
         self.object.view_count += 1
         self.object.save()
         return self.object
-
-
 class BlogDeleteView(DeleteView):
     model = blog
     success_url = reverse_lazy('main:blogs')

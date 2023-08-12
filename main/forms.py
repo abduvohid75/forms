@@ -29,6 +29,12 @@ class ProductForm(StyleForm, forms.ModelForm):
                 raise forms.ValidationError("Недопустимые слова в названии продукта")
         return cleaned_data
 
+class ModerProductForm(StyleForm, forms.ModelForm):
+
+    class Meta:
+        model = Product
+        fields = ('description', 'category', 'is_published',)
+
 class VersionForm(StyleForm, forms.ModelForm):
 
     class Meta:

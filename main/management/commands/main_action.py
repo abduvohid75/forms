@@ -3,12 +3,11 @@ from django.core.management import BaseCommand
 from main.models import Product, Category
 from users.models import User
 
-
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
         user = User.objects.create(
-            email='admin@sky.pro',
+            email='admin2@sky.pro',
             first_name = 'Admin',
             last_name = 'Admin',
             is_staff=True,

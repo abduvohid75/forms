@@ -7,7 +7,7 @@ from users.views import RegisterView, ProfileView, send_verification_email, veri
 app_name = UsersConfig.name
 
 urlpatterns = [
-    path('login', LoginView.as_view(template_name='users/login.html'), name='login'),
+    path('login/', LoginView.as_view(template_name='users/login.html'), name='login'),
     path('logout', LogoutView.as_view(), name='logout'),
     path('register', RegisterView.as_view(), name='user_reg'),
     path('profile', ProfileView.as_view(template_name='users/profile.html'), name='profile'),
