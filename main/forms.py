@@ -35,6 +35,12 @@ class ModerProductForm(StyleForm, forms.ModelForm):
         model = Product
         fields = ('description', 'category', 'is_published',)
 
+class CategoryForm(StyleForm, forms.ModelForm):
+
+    class Meta:
+        model = Category
+        fields = '__all__'
+
 class VersionForm(StyleForm, forms.ModelForm):
 
     class Meta:

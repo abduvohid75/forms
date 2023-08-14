@@ -1,0 +1,18 @@
+{% extends 'main/base.html' %}
+{% block content %}
+{% for object in object_list %}
+{% load my_tags %}
+<div class="col-md-4">
+    {% if user.is_authenticated %}
+    <div class="card mb-4 box-shadow">
+        <div class="card">
+            <div class="card-body" align="center">
+                <h5 class="card-title">{{object.name | title}}</h5>
+                <p class="card-text">{{object.description | title | truncatewords:100}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+{% endblock %}

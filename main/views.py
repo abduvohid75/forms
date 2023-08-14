@@ -6,8 +6,9 @@ from django.views.generic import ListView, CreateView, DetailView, UpdateView, D
 from django.forms import inlineformset_factory
 from django.contrib.auth.models import Group
 
-from main.models import blog, Product, Version
-from main.forms import BlogForm, ProductForm, VersionForm, ModerProductForm
+from main.models import blog, Product, Version, Category
+from main.forms import BlogForm, ProductForm, VersionForm, ModerProductForm, CategoryForm
+from main import services
 
 
 # Create your views here.
@@ -28,6 +29,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
 class ProductListView(LoginRequiredMixin, ListView):
     model = Product
+    is_moder = False
     template_name = 'main/index.html'
     extra_context = {'title': 'Главная'}
 
@@ -35,6 +37,16 @@ class ProductListView(LoginRequiredMixin, ListView):
         query_set = super().get_queryset()
         products_with_true_status = query_set.filter(version__status=True, is_published=True).distinct()
         return products_with_true_status
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+
+        if Group.objects.get(name='Модераторы') in self.request.user.groups.all():
+            self.is_moder = True
+
+        context_data = super().get_context_data(**kwargs)
+        context_data['is_moder'] = self.is_moder
+
+        return context_data
 
 
 class ProductUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
@@ -128,6 +140,25 @@ class VersionCreateView(LoginRequiredMixin, CreateView):
     model = Version
     form_class = VersionForm
     success_url = reverse_lazy('main:index')
+
+class CategoryCreateView(LoginRequiredMixin,PermissionRequiredMixin, CreateView):
+    model = Category
+    form_class = CategoryForm
+    permission_required = 'main.add_Category'
+    success_url = reverse_lazy('main:categories')
+
+
+def check_categories(request):
+    categories = services.get_categories()
+
+    context_data = {
+        'object_list' : categories,
+        'title' : 'Список категорий'
+    }
+
+    print('Категории: ', categories)
+
+    return render(request, 'main/categories.html', context_data)
 
 def contacts(request):
     if (request.method == 'POST'):
